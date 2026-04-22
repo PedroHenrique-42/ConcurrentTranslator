@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ConcurrentTranslator</string>
+    <string name="origin_language">Idioma de origem</string>
+    <string name="type_here">Digite aqui</string>
+    <string name="destiny_language">Idioma de destino</string>
+    <string name="translation">Tradução</string>
+    <string name="translate">Traduzir</string>
 </resources>
