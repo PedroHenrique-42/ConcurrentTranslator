@@ -49,4 +49,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Retrofit
+    val retrofitVersion = "2.9.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
 }
