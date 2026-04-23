@@ -13,7 +13,7 @@ interface ConcurrentTranslatorApiService {
         "x-rapidapi-key: f8d372a6f0msh14f81a14120937dp19f03bjsn6526a833dcb4"
     )
     @GET("/languagues")
-    fun getLanguagues(): Call<LanguagesList>
+    fun fetchLanguagues(): Call<LanguagesList>
 
     @Headers(
         "x-rapidapi-host: deep-translate1.p.rapidapi.com",
