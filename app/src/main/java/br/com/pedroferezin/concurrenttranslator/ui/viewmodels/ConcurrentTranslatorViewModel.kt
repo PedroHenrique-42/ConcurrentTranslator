@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class ConcurrentTranslatorViewModel : ViewModel() {
     private val _translateState = MutableStateFlow<TranslationState>(TranslationState.Empty)
     val translateState = _translateState.asStateFlow()
+    private val _translationState = MutableStateFlow<TranslationState>(TranslationState.Empty)
+    val translationState = _translationState.asStateFlow()
 
     private val _fetchLanguagesState =
         MutableStateFlow<FetchLanguagesState>(FetchLanguagesState.Empty)
