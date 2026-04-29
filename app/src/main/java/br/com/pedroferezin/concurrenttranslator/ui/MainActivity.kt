@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
 
                         adapter.getItem(adapter.count - 1)?.also { language ->
                             amb.destinyLanguageAc.setText(language, false)
-                            selectedOriginLanguage = language
+                            selectedDestinyLanguage = language
                         }
                     }
 
