@@ -1,12 +1,13 @@
 package br.com.pedroferezin.concurrenttranslator.api
 
 import br.com.pedroferezin.concurrenttranslator.domain.LanguagesList
+import br.com.pedroferezin.concurrenttranslator.domain.TranslationRequest
 import br.com.pedroferezin.concurrenttranslator.domain.TranslationResult
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface ConcurrentTranslatorApiService {
     @Headers(
@@ -22,8 +23,6 @@ interface ConcurrentTranslatorApiService {
     )
     @POST("language/translate/v2")
     fun translate(
-        @Query("q") text: String,
-        @Query("source") originLanguague: String,
-        @Query("target") destinyLanguague: String
+        @Body request: TranslationRequest
     ): Call<TranslationResult>
 }
