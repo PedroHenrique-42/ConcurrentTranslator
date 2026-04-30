@@ -3,6 +3,7 @@ package br.com.pedroferezin.concurrenttranslator.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.pedroferezin.concurrenttranslator.api.ConcurrentTranslatorApiClient
+import br.com.pedroferezin.concurrenttranslator.domain.TranslationRequest
 import br.com.pedroferezin.concurrenttranslator.ui.viewmodels.states.FetchLanguagesState
 import br.com.pedroferezin.concurrenttranslator.ui.viewmodels.states.TranslationState
 import kotlinx.coroutines.Dispatchers
@@ -20,12 +21,10 @@ class ConcurrentTranslatorViewModel : ViewModel() {
     val fetchLanguagesState = _fetchLanguagesState.asStateFlow()
 
     fun translate(text: String, originLanguague: String, destinyLanguague: String) =
-        viewModelScope.launch {
-            ConcurrentTranslatorApiClient.service.translate(
-                text = text,
-                originLanguague = originLanguague,
-                destinyLanguague = destinyLanguague,
-            ).execute().also { response ->
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = TranslationRequest(text, originLanguague, destinyLanguague)
+
+            ConcurrentTranslatorApiClient.service.translate(request).execute().also { response ->
                 if (response.code() != HttpURLConnection.HTTP_OK) {
                     _translationState.emit(TranslationState.Error("Ocorreu um erro ao traduzir o texto"))
                     return@launch
