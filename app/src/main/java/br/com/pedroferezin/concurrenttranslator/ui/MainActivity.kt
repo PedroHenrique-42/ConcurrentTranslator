@@ -40,12 +40,16 @@ class MainActivity : AppCompatActivity() {
         with(amb) {
             originLanguageAc.apply {
                 setAdapter(adapter)
-                setOnClickListener { selectedOriginLanguage = text.toString() }
+                setOnItemClickListener { _, _, _, _ ->
+                    selectedOriginLanguage = text.toString()
+                }
             }
 
             destinyLanguageAc.apply {
                 setAdapter(adapter)
-                setOnClickListener { selectedDestinyLanguage = text.toString() }
+                setOnItemClickListener { _, _, _, _ ->
+                    selectedDestinyLanguage = text.toString()
+                }
             }
 
             translateBt.setOnClickListener {
@@ -68,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
                     is FetchLanguagesState.Success -> {
                         adapter.clear()
-                        adapter.addAll(state.languages.languages.map { language -> language.name }
+                        adapter.addAll(state.languages.languages.map { language -> language.language }
                             .sorted())
 
                         adapter.getItem(0)?.also { language ->
