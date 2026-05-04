@@ -5,4 +5,6 @@
     <string name="destiny_language">Idioma de destino</string>
     <string name="translation">Tradução</string>
     <string name="translate">Traduzir</string>
+    <string name="error_select_language">Selecione um idioma</string>
+    <string name="type_text_error">Digite um texto para traduzir</string>
 </resources>

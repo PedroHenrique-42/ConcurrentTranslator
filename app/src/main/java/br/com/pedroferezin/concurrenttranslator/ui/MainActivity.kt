@@ -42,6 +42,9 @@ class MainActivity : AppCompatActivity() {
                 setAdapter(adapter)
                 setOnItemClickListener { _, _, _, _ ->
                     selectedOriginLanguage = text.toString()
+
+                    originLanguageAcTil.error = null
+                    originLanguageAcTil.isErrorEnabled = false
                 }
             }
 
@@ -49,15 +52,20 @@ class MainActivity : AppCompatActivity() {
                 setAdapter(adapter)
                 setOnItemClickListener { _, _, _, _ ->
                     selectedDestinyLanguage = text.toString()
+
+                    destinyLanguageAcTil.error = null
+                    destinyLanguageAcTil.isErrorEnabled = false
                 }
             }
 
             translateBt.setOnClickListener {
-                concurrentTranslatorViewModel.translate(
-                    originLanguageEt.text.toString(),
-                    selectedOriginLanguage,
-                    selectedDestinyLanguage
-                )
+                if (validateOriginLanguageText() && validateOriginLanguage() && validateDestinyLanguage()) {
+                    concurrentTranslatorViewModel.translate(
+                        originLanguageEt.text.toString(),
+                        selectedOriginLanguage,
+                        selectedDestinyLanguage
+                    )
+                }
             }
         }
     }
@@ -96,6 +104,39 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    private fun validateOriginLanguageText(): Boolean = with(amb) {
+        if (originLanguageEt.text.toString().isEmpty()) {
+            originLanguageEtTil.error = getString(R.string.type_text_error)
+            originLanguageEtTil.requestFocus()
+            false
+        } else {
+            originLanguageEtTil.isErrorEnabled = false
+            true
+        }
+    }
+
+    private fun validateOriginLanguage(): Boolean = with(amb) {
+        if (originLanguageAc.text.toString().isEmpty()) {
+            originLanguageAcTil.error = getString(R.string.error_select_language)
+            originLanguageAcTil.requestFocus()
+            false
+        } else {
+            originLanguageAcTil.isErrorEnabled = false
+            true
+        }
+    }
+
+    private fun validateDestinyLanguage(): Boolean = with(amb) {
+        if (destinyLanguageAc.text.toString().isEmpty()) {
+            destinyLanguageAcTil.error = getString(R.string.error_select_language)
+            destinyLanguageAcTil.requestFocus()
+            false
+        } else {
+            destinyLanguageAcTil.isErrorEnabled = false
+            true
         }
     }
 }
