@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import br.com.pedroferezin.concurrenttranslator.R
 import br.com.pedroferezin.concurrenttranslator.databinding.ActivityMainBinding
+import br.com.pedroferezin.concurrenttranslator.domain.LanguagesList
 import br.com.pedroferezin.concurrenttranslator.ui.viewmodels.ConcurrentTranslatorViewModel
 import br.com.pedroferezin.concurrenttranslator.ui.viewmodels.states.FetchLanguagesState
 import com.google.android.material.snackbar.Snackbar
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(amb.mainTb.apply { title = getString(R.string.app_name) })
 
         val languagesAdapter =
-            ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf<String>())
+            ArrayAdapter<LanguagesList.Language>(this, android.R.layout.simple_list_item_1, mutableListOf())
 
         listenFetchState(languagesAdapter)
         configureViewListeners(languagesAdapter)
@@ -36,12 +37,13 @@ class MainActivity : AppCompatActivity() {
         concurrentTranslatorViewModel.fetchLanguagues()
     }
 
-    private fun configureViewListeners(adapter: ArrayAdapter<String>) {
+    private fun configureViewListeners(adapter: ArrayAdapter<LanguagesList.Language>) {
         with(amb) {
             originLanguageAc.apply {
                 setAdapter(adapter)
-                setOnItemClickListener { _, _, _, _ ->
-                    selectedOriginLanguage = text.toString()
+                setOnItemClickListener { _, _, position, _ ->
+                    val language = adapter.getItem(position)
+                    selectedOriginLanguage = language?.language ?: ""
 
                     originLanguageAcTil.error = null
                     originLanguageAcTil.isErrorEnabled = false
@@ -50,8 +52,9 @@ class MainActivity : AppCompatActivity() {
 
             destinyLanguageAc.apply {
                 setAdapter(adapter)
-                setOnItemClickListener { _, _, _, _ ->
-                    selectedDestinyLanguage = text.toString()
+                setOnItemClickListener { _, _, position, _ ->
+                    val language = adapter.getItem(position)
+                    selectedDestinyLanguage = language?.language ?: ""
 
                     destinyLanguageAcTil.error = null
                     destinyLanguageAcTil.isErrorEnabled = false
@@ -70,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun listenFetchState(adapter: ArrayAdapter<String>) {
+    fun listenFetchState(adapter: ArrayAdapter<LanguagesList.Language>) {
         lifecycleScope.launch {
             concurrentTranslatorViewModel.fetchLanguagesState.collect { state ->
                 when (state) {
@@ -80,17 +83,17 @@ class MainActivity : AppCompatActivity() {
 
                     is FetchLanguagesState.Success -> {
                         adapter.clear()
-                        adapter.addAll(state.languages.languages.map { language -> language.language }
-                            .sorted())
+                        val sortedLanguages = state.languages.languages.sortedBy { it.name }
+                        adapter.addAll(sortedLanguages)
 
-                        adapter.getItem(0)?.also { language ->
-                            amb.originLanguageAc.setText(language, false)
-                            selectedOriginLanguage = language
+                        sortedLanguages.firstOrNull()?.also { language ->
+                            amb.originLanguageAc.setText(language.name, false)
+                            selectedOriginLanguage = language.language
                         }
 
-                        adapter.getItem(adapter.count - 1)?.also { language ->
-                            amb.destinyLanguageAc.setText(language, false)
-                            selectedDestinyLanguage = language
+                        sortedLanguages.lastOrNull()?.also { language ->
+                            amb.destinyLanguageAc.setText(language.name, false)
+                            selectedDestinyLanguage = language.language
                         }
                     }
 

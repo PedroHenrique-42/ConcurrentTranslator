@@ -6,5 +6,7 @@ data class LanguagesList(
     data class Language(
         val language: String,
         val name: String
-    )
+    ) {
+        override fun toString(): String = name
+    }
 }
