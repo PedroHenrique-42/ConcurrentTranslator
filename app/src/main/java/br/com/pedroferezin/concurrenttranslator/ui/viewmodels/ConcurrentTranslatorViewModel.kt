@@ -36,7 +36,7 @@ class ConcurrentTranslatorViewModel : ViewModel() {
             }
         }
 
-    fun fetchLanguagues() {
+    fun fetchLanguages() {
         viewModelScope.launch(Dispatchers.IO) {
             ConcurrentTranslatorApiClient.service.fetchLanguagues().execute().also { response ->
                 if (response.code() != HttpURLConnection.HTTP_OK) {

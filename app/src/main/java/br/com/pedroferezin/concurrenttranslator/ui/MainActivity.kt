@@ -10,6 +10,7 @@ import br.com.pedroferezin.concurrenttranslator.databinding.ActivityMainBinding
 import br.com.pedroferezin.concurrenttranslator.domain.LanguagesList
 import br.com.pedroferezin.concurrenttranslator.ui.viewmodels.ConcurrentTranslatorViewModel
 import br.com.pedroferezin.concurrenttranslator.ui.viewmodels.states.FetchLanguagesState
+import br.com.pedroferezin.concurrenttranslator.ui.viewmodels.states.TranslationState
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
@@ -29,12 +30,17 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(amb.mainTb.apply { title = getString(R.string.app_name) })
 
         val languagesAdapter =
-            ArrayAdapter<LanguagesList.Language>(this, android.R.layout.simple_list_item_1, mutableListOf())
+            ArrayAdapter<LanguagesList.Language>(
+                this,
+                android.R.layout.simple_list_item_1,
+                mutableListOf()
+            )
 
         listenFetchState(languagesAdapter)
+        listenTranslateState()
         configureViewListeners(languagesAdapter)
 
-        concurrentTranslatorViewModel.fetchLanguagues()
+        concurrentTranslatorViewModel.fetchLanguages()
     }
 
     private fun configureViewListeners(adapter: ArrayAdapter<LanguagesList.Language>) {
@@ -86,19 +92,45 @@ class MainActivity : AppCompatActivity() {
                         val sortedLanguages = state.languages.languages.sortedBy { it.name }
                         adapter.addAll(sortedLanguages)
 
-                        sortedLanguages.firstOrNull()?.also { language ->
-                            amb.originLanguageAc.setText(language.name, false)
-                            selectedOriginLanguage = language.language
-                        }
+                        sortedLanguages.find { language -> language.language == "en" }
+                            ?.also { language ->
+                                amb.originLanguageAc.setText(language.name, false)
+                                selectedOriginLanguage = language.language
+                            }
 
-                        sortedLanguages.lastOrNull()?.also { language ->
-                            amb.destinyLanguageAc.setText(language.name, false)
-                            selectedDestinyLanguage = language.language
-                        }
+                        sortedLanguages.find { language -> language.language == "pt" }
+                            ?.also { language ->
+                                amb.destinyLanguageAc.setText(language.name, false)
+                                selectedDestinyLanguage = language.language
+                            }
                     }
 
                     is FetchLanguagesState.Error -> {
                         adapter.clear()
+                        Snackbar.make(
+                            amb.root,
+                            state.message,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+    fun listenTranslateState() {
+        lifecycleScope.launch {
+            concurrentTranslatorViewModel.translationState.collect { state ->
+                when (state) {
+                    is TranslationState.Empty -> {}
+
+                    is TranslationState.Success -> {
+                        amb.translationTiet.setText(
+                            state.translation.data.translations.translatedText.firstOrNull() ?: ""
+                        )
+                    }
+
+                    is TranslationState.Error -> {
                         Snackbar.make(
                             amb.root,
                             state.message,
