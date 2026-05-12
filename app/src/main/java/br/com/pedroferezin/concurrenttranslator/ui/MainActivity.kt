@@ -1,6 +1,7 @@
 package br.com.pedroferezin.concurrenttranslator.ui
 
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -122,15 +123,25 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             concurrentTranslatorViewModel.translationState.collect { state ->
                 when (state) {
-                    is TranslationState.Empty -> {}
+                    is TranslationState.Empty -> {
+                        amb.loadingPb.visibility = View.GONE
+                    }
+
+                    is TranslationState.Loading -> {
+                        amb.loadingPb.visibility = View.VISIBLE
+                    }
 
                     is TranslationState.Success -> {
+                        amb.loadingPb.visibility = View.GONE
+
                         amb.translationTiet.setText(
                             state.translation.data.translations.translatedText.firstOrNull() ?: ""
                         )
                     }
 
                     is TranslationState.Error -> {
+                        amb.loadingPb.visibility = View.GONE
+
                         Snackbar.make(
                             amb.root,
                             state.message,

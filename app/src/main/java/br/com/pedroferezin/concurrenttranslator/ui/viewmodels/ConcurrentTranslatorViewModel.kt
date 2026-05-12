@@ -22,6 +22,7 @@ class ConcurrentTranslatorViewModel : ViewModel() {
 
     fun translate(text: String, originLanguague: String, destinyLanguague: String) =
         viewModelScope.launch(Dispatchers.IO) {
+            _translationState.emit(TranslationState.Loading)
             val request = TranslationRequest(text, originLanguague, destinyLanguague)
 
             ConcurrentTranslatorApiClient.service.translate(request).execute().also { response ->
